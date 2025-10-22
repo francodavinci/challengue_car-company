@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace CarCompany.Domain.Entities
 {
-    internal class DistributionCenter
+    public class DistributionCenter
     {
+        public Guid Id { get; set; }
+
+        public string Name { get; set; }
     }
 }

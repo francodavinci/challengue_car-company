@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using CarCompany.Domain.Entities;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CarCompany.Infrastructure.Repositories
 {
-    internal class DistributionCenterRepository
+    public class DistributionCenterRepository
     {
+        private readonly List<DistributionCenter> _distributionCenters = new ();
     }
 }

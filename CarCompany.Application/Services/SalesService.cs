@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarCompany.Application.Services
 {
-    public interface IDistributionCenterService
+    public class SalesService
     {
     }
 }

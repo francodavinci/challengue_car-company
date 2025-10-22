@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using CarCompany.Domain.Enums;
+using System.Reflection;
+using CarCompany.Domain.Entities;
 
 namespace CarCompany.Application.DTOs
 {
@@ -15,6 +17,19 @@ namespace CarCompany.Application.DTOs
 
 
         [Required(ErrorMessage = "Please select a car type")]
-        public TypeCar CarTypeID { get; set; }
+        public TypeCar CarType { get; set; }
+
+        /// <summary>
+        /// Converts the current object of CreateSaleRequest into a new object of Sale
+        /// </summary>
+        /// <returns></returns>
+        public Sale ToSale()
+        {
+            return new Sale()
+            {
+                Car = new Car(this.CarType),
+                DistributionCenterID = this.DistributionCenterID,
+            };
+        }
     }
 }
