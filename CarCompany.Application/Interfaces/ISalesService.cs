@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CarCompany.Application.Services
+namespace CarCompany.Application.Interfaces
 {
     /// <summary>
     /// 
@@ -17,7 +17,7 @@ namespace CarCompany.Application.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        SaleResponse CreateSale(CreateSaleRequest request);
+        SaleResponse CreateSale(SaleRequest request);
 
         /// <summary>
         /// 
@@ -29,12 +29,12 @@ namespace CarCompany.Application.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        IEnumerable<SalesByDistributionCenterResponse> GetSalesByDistributionCenter();
+        SalesByDistributionCenterResponse GetSalesByDistributionCenter(Guid distributionCenterID);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        SalesPercentageByTypeCarReponse GetSalesPercentageByTypeCar();
+        SalesUnitsPercentageByCenterResponse GetUnitsSalesPercentageByCenter();
     }
 }

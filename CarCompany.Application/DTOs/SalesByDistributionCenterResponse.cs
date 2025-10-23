@@ -9,8 +9,6 @@ namespace CarCompany.Application.DTOs
 {
     public class SalesByDistributionCenterResponse
     {
-        public Guid DistributionCenterID { get; set; }
-
         public decimal TotalAmount { get; set; }
 
         public int TotalUnits { get; set; }

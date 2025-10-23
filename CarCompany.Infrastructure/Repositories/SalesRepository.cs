@@ -41,7 +41,5 @@ namespace CarCompany.Infrastructure.Repositories
         public IEnumerable<Sale> GetAll() => _sales.ToList();
 
         public IEnumerable<Sale> GetByDistributionCenter(Guid? distributionCenterID) => _sales.Where(x => x.DistributionCenterID == distributionCenterID);
-
-        public IEnumerable<Sale> GetByTypeModel(TypeCar model) =>_sales.Where(x => x.Car.Model == model);
     }
 }

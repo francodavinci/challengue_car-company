@@ -1,3 +1,4 @@
+using CarCompany.Application.Interfaces;
 using CarCompany.Application.RepositoriesContracts;
 using CarCompany.Application.Services;
 using CarCompany.Infrastructure.Repositories;

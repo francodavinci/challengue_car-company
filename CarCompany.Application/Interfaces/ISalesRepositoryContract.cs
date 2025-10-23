@@ -34,12 +34,5 @@ namespace CarCompany.Application.RepositoriesContracts
         /// <param name="distributionCenterID"></param>
         /// <returns></returns>
         IEnumerable<Sale> GetByDistributionCenter(Guid? distributionCenterID);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        IEnumerable<Sale> GetByTypeModel(TypeCar model);
     }
 }

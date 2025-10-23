@@ -6,9 +6,9 @@ namespace CarCompany.Domain.Entities;
 
 public class Sale
 {
-    public Guid Id { get; set; }
-    public Car Car { get; set; }
-    public Guid DistributionCenterID { get; set; }
+    public Guid Id { get; private set; }
+    public Car Car { get; private set; }
+    public Guid DistributionCenterID { get; private set; }
 
     public Sale(Car car, Guid distributionCenterID)
     {

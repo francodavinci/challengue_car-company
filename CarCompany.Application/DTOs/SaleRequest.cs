@@ -10,7 +10,7 @@ using CarCompany.Domain.Entities;
 
 namespace CarCompany.Application.DTOs
 {
-    public class CreateSaleRequest
+    public class SaleRequest
     {
         [Required(ErrorMessage = "Please select a distribution center")]
         public Guid DistributionCenterID { get; set; }
