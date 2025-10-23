@@ -19,9 +19,9 @@ namespace CarCompany.Domain.Entities
             { TypeCar.SPORT, 18200m }
         };
 
-        public Guid Id { get; set; }
-        public decimal Price { get; set; }
-        public TypeCar Model { get; set; }
+        public Guid Id { get; private set; }
+        public decimal Price { get; private set; }
+        public TypeCar Model { get; private set; }
 
         public Car(TypeCar model)
         {

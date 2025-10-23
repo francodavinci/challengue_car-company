@@ -25,11 +25,10 @@ namespace CarCompany.Application.DTOs
         /// <returns></returns>
         public Sale ToSale()
         {
-            return new Sale()
-            {
-                Car = new Car(this.CarType),
-                DistributionCenterID = this.DistributionCenterID,
-            };
+            Car car = new (this.CarType);
+            Sale sale = new (car, this.DistributionCenterID);
+
+            return sale;
         }
     }
 }

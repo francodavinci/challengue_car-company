@@ -16,13 +16,13 @@ namespace CarCompany.Application.RepositoriesContracts
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<DistributionCenter>> GetAllAsync();
+        IEnumerable<DistributionCenter> GetAll();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<DistributionCenter> GetByIdAsync(Guid id);
+        DistributionCenter GetById(Guid id);
     }
 }

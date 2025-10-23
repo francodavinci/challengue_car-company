@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CarCompany.Application.DTOs;
 using CarCompany.Application.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Net;
 
 namespace CarCompany.API.Controllers
 {
@@ -25,12 +22,14 @@ namespace CarCompany.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Post(CreateSaleRequest saleAddRequest)
+        [ProducesResponseType(typeof(SaleResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public  IActionResult Post(CreateSaleRequest saleAddRequest)
         {
             try
             {
-                var saleResponse = await _salesService.CreateSaleAsync(saleAddRequest);
+                var saleResponse =  _salesService.CreateSale(saleAddRequest);
 
                 if (!ModelState.IsValid)
                 {
@@ -38,7 +37,7 @@ namespace CarCompany.API.Controllers
                     return BadRequest(ModelState);
                 }
 
-                return CreatedAtAction(nameof(SaleResponse), saleResponse);
+                return Created("sale successfully created", saleResponse);
             }
             catch (ArgumentException ex)
             {

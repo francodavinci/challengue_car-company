@@ -20,26 +20,26 @@ namespace CarCompany.Application.RepositoriesContracts
         /// </summary>
         /// <param name="request"></param> Person to add 
         /// <returns>Returns the sale response</returns>
-        Task<Sale> AddAsync(CreateSaleRequest? request);
+        Sale Add(Sale sale);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Sale>> GetAllAsync();
+        IEnumerable<Sale> GetAll();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="distributionCenterID"></param>
         /// <returns></returns>
-        Task<IEnumerable<Sale>> GetByDistributionCenterAsync(Guid? distributionCenterID);
+        IEnumerable<Sale> GetByDistributionCenter(Guid? distributionCenterID);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<IEnumerable<Sale>> GetByTypeModelAsync(TypeCar model);
+        IEnumerable<Sale> GetByTypeModel(TypeCar model);
     }
 }
