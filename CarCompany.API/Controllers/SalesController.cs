@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CarCompany.Application.DTOs;
-using CarCompany.Application.Interfaces;
+using CarCompany.Application.UseCases;
+using CarCompany.Domain.Exceptions;
 
 namespace CarCompany.API.Controllers
 {
@@ -8,60 +9,69 @@ namespace CarCompany.API.Controllers
     [ApiController]
     public class SalesController : Controller
     {
-        //private fields 
-        private readonly ISalesService _salesService;
+        private readonly CreateSaleUseCase _createSaleUseCase;
+        private readonly GetTotalSalesUseCase _getTotalSalesUseCase;
+        private readonly GetSalesByDistributionCenterUseCase _getSalesByDistributionCenterUseCase;
+        private readonly GetUnitsSalesPercentageByDistributionCenter _getUnitsSalesPercentageByDistributionCenter;
         private readonly ILogger<SalesController> _logger;
 
-        //constructor
-        public SalesController(ISalesService salesService, ILogger<SalesController> logger)
+        public SalesController(
+            CreateSaleUseCase createSaleUseCase,
+            GetTotalSalesUseCase getTotalSalesUseCase,
+            GetSalesByDistributionCenterUseCase getSalesByDistributionCenterUseCase,
+            GetUnitsSalesPercentageByDistributionCenter getUnitsSalesPercentageByDistributionCenter,
+            ILogger<SalesController> logger)
         {
-            _salesService = salesService;
+            _createSaleUseCase = createSaleUseCase;
+            _getTotalSalesUseCase = getTotalSalesUseCase;
+            _getSalesByDistributionCenterUseCase = getSalesByDistributionCenterUseCase;
+            _getUnitsSalesPercentageByDistributionCenter = getUnitsSalesPercentageByDistributionCenter;
             _logger = logger;
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(SaleResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public  IActionResult Post(SaleRequest saleAddRequest)
+        public IActionResult Post(SaleRequest saleRequest)
         {
             try
             {
-                var saleResponse =  _salesService.CreateSale(saleAddRequest);
-
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogWarning("invalid parameter");
+                    _logger.LogWarning("Invalid parameters");
                     return BadRequest(ModelState);
                 }
 
-                return Created("sale successfully created", saleResponse);
+                var result = _createSaleUseCase.Execute(saleRequest);
+                return Created("", result);
             }
-            catch (ArgumentException ex)
+            catch (DistributionCenterNotFoundException ex)
             {
-                _logger.LogWarning(ex, "validation error");
-                return BadRequest(new { message = ex.Message});
+                _logger.LogWarning(ex, "Distribution center not found");
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "internal server error Creating a new sale");
-                return StatusCode(500, new { message = "internal server error" });
+                _logger.LogError(ex, "Error creating sale");
+                return StatusCode(500, new { message = "Internal server error" });
             }
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(TotalSalesResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetTotalSalesVolume()
+        public IActionResult GetTotalSales()
         {
             try
             {
-                var result = _salesService.GetTotalSalesVolume();
+                var result = _getTotalSalesUseCase.Execute();
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting total sales volume");
+                _logger.LogError(ex, "Error getting total sales");
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
@@ -75,13 +85,13 @@ namespace CarCompany.API.Controllers
         {
             try
             {
-                var result = _salesService.GetSalesByDistributionCenter(distributionCenterId);
+                var result = _getSalesByDistributionCenterUseCase.Execute(distributionCenterId);
                 return Ok(result);
             }
-            catch (ArgumentException ex)
+            catch (DistributionCenterNotFoundException ex)
             {
-                _logger.LogWarning(ex, "validation error");
-                return BadRequest(new { message = ex.Message });
+                _logger.LogWarning(ex, "Distribution center not found");
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -97,7 +107,7 @@ namespace CarCompany.API.Controllers
         {
             try
             {
-                var result = _salesService.GetUnitsSalesPercentageByCenter();
+                var result = _getUnitsSalesPercentageByDistributionCenter.GetUnitsSalesPercentageByCenter();
                 return Ok(result);
             }
             catch (Exception ex)
