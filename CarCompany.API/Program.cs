@@ -1,26 +1,28 @@
-using CarCompany.Application.Interfaces;
-using CarCompany.Application.RepositoriesContracts;
-using CarCompany.Application.Services;
+// CarCompany.API/Program.cs
+using CarCompany.Application.UseCases;
+using CarCompany.Domain.Interfaces;
 using CarCompany.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register repositories
-builder.Services.AddSingleton<ISalesRepositoryContract, SalesRepository>();
-builder.Services.AddSingleton<IDistributionCenterRepositoryContract, DistributionCenterRepository>();
+// Register repositories (Domain interfaces)
+builder.Services.AddSingleton<ISalesRepository, SalesRepository>();
+builder.Services.AddSingleton<IDistributionCenterRepository, DistributionCenterRepository>();
 
-// Register services
-builder.Services.AddSingleton<ISalesService, SalesService>();
+// Register use cases
+builder.Services.AddScoped<CreateSaleUseCase>();
+builder.Services.AddScoped<GetTotalSalesUseCase>();
+builder.Services.AddScoped<GetSalesByDistributionCenterUseCase>();
+builder.Services.AddScoped<GetUnitsSalesPercentageByDistributionCenter>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -28,8 +30,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseRouting();
 app.MapControllers();
 
