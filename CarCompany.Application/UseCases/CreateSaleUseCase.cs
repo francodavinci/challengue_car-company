@@ -2,6 +2,7 @@
 using CarCompany.Domain.Entities;
 using CarCompany.Domain.Interfaces;
 using CarCompany.Domain.Exceptions;
+using CarCompany.Domain.Enums;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
@@ -31,6 +32,12 @@ namespace CarCompany.Application.UseCases
             {
                 _logger.LogInformation("Starting CreateSaleUseCase execution for DistributionCenter: {DistributionCenterId}", 
                     request.DistributionCenterID);
+
+                // Validate car type
+                if (!Enum.IsDefined(typeof(TypeCar), request.CarType))
+                {
+                    throw new InvalidCarTypeException(request.CarType);
+                }
 
                 // Validate distribution center exists
                 var distributionCenter = _distributionCenterRepository.GetById(request.DistributionCenterID);

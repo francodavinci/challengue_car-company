@@ -56,6 +56,12 @@ namespace CarCompany.API.Controllers
                 
                 return Created("", result);
             }
+            catch (InvalidCarTypeException ex)
+            {
+                stopwatch.Stop();
+                _logger.LogWarning(ex, "Invalid car type provided. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                return BadRequest(new { message = ex.Message, carType = ex.CarType });
+            }
             catch (DistributionCenterNotFoundException ex)
             {
                 stopwatch.Stop();
