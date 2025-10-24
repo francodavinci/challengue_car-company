@@ -10,12 +10,20 @@ using CarCompany.Domain.Entities;
 
 namespace CarCompany.Application.DTOs
 {
+    /// <summary>
+    /// Request to create a new automobile sale
+    /// </summary>
     public class SaleRequest
     {
+        /// <summary>
+        /// ID of the distribution center where the sale was made
+        /// </summary>
         [Required(ErrorMessage = "Please select a distribution center")]
         public Guid DistributionCenterID { get; set; }
 
-
+        /// <summary>
+        /// Type of automobile sold (0=SEDAN, 1=SUV, 2=OFFROAD)
+        /// </summary>
         [Required(ErrorMessage = "Please select a car type")]
         public TypeCar CarType { get; set; }
 

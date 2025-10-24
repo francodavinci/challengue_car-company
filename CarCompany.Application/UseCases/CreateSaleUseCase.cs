@@ -2,6 +2,7 @@
 using CarCompany.Domain.Entities;
 using CarCompany.Domain.Interfaces;
 using CarCompany.Domain.Exceptions;
+using CarCompany.Domain.Enums;
 
 namespace CarCompany.Application.UseCases
 {
@@ -20,6 +21,12 @@ namespace CarCompany.Application.UseCases
 
         public SaleResponse Execute(SaleRequest request)
         {
+            // Validate car type
+            if (!Enum.IsDefined(typeof(TypeCar), request.CarType))
+            {
+                throw new InvalidCarTypeException(request.CarType);
+            }
+
             // Validate distribution center exists
             var distributionCenter = _distributionCenterRepository.GetById(request.DistributionCenterID);
             if (distributionCenter == null)

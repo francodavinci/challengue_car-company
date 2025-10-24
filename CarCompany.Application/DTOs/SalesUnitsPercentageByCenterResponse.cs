@@ -9,13 +9,13 @@ namespace CarCompany.Application.DTOs
 {
     public class SalesUnitsPercentageByCenterResponse
     {
-        public List<CenterData> CenterPercentages { get; set; }
+        public List<CenterData> CenterPercentages { get; set; } = new();
     }
 
     public class CenterData
     {
-        public string CenterName { get; set; }
-        public Dictionary<TypeCar, ModelPercentageData> ModelPercentages { get; set; }
+        public string CenterName { get; set; } = string.Empty;
+        public Dictionary<TypeCar, ModelPercentageData> ModelPercentages { get; set; } = new();
         public CenterData(string centerName, Dictionary<TypeCar, ModelPercentageData> modelPercentages)
         {
             CenterName = centerName;

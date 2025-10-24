@@ -9,14 +9,29 @@ using System.Threading.Tasks;
 
 namespace CarCompany.Application.DTOs
 {
+    /// <summary>
+    /// Response with information of the created sale
+    /// </summary>
     public class SaleResponse
     {
+        /// <summary>
+        /// Unique sale ID
+        /// </summary>
         public Guid ID { get; set; }
 
-        public Car Car { get; set; }
+        /// <summary>
+        /// Information of the sold automobile
+        /// </summary>
+        public Car Car { get; set; } = null!;
 
+        /// <summary>
+        /// ID of the distribution center where the sale was made
+        /// </summary>
         public Guid DistributionCenterID { get; set; }
 
+        /// <summary>
+        /// Sale date and time
+        /// </summary>
         public DateTime Date {  get; set; }
     }
 
