@@ -2,6 +2,7 @@
 using CarCompany.Application.DTOs;
 using CarCompany.Application.UseCases;
 using CarCompany.Domain.Exceptions;
+using System.Diagnostics;
 
 namespace CarCompany.API.Controllers
 {
@@ -36,8 +37,12 @@ namespace CarCompany.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Post(SaleRequest saleRequest)
         {
+            var stopwatch = Stopwatch.StartNew();
+            
             try
             {
+                _logger.LogInformation("Starting POST /api/sales endpoint execution");
+
                 if (!ModelState.IsValid)
                 {
                     _logger.LogWarning("Invalid parameters");
@@ -45,16 +50,22 @@ namespace CarCompany.API.Controllers
                 }
 
                 var result = _createSaleUseCase.Execute(saleRequest);
+                
+                stopwatch.Stop();
+                _logger.LogInformation("POST /api/sales endpoint completed successfully in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                
                 return Created("", result);
             }
             catch (DistributionCenterNotFoundException ex)
             {
-                _logger.LogWarning(ex, "Distribution center not found");
+                stopwatch.Stop();
+                _logger.LogWarning(ex, "Distribution center not found. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating sale");
+                stopwatch.Stop();
+                _logger.LogError(ex, "Error creating sale. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
@@ -64,14 +75,23 @@ namespace CarCompany.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetTotalSales()
         {
+            var stopwatch = Stopwatch.StartNew();
+            
             try
             {
+                _logger.LogInformation("Starting GET /api/sales endpoint execution");
+
                 var result = _getTotalSalesUseCase.Execute();
+                
+                stopwatch.Stop();
+                _logger.LogInformation("GET /api/sales endpoint completed successfully in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting total sales");
+                stopwatch.Stop();
+                _logger.LogError(ex, "Error getting total sales. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
@@ -83,19 +103,29 @@ namespace CarCompany.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetSalesByDistributionCenter(Guid distributionCenterId)
         {
+            var stopwatch = Stopwatch.StartNew();
+            
             try
             {
+                _logger.LogInformation("Starting GET /api/sales/{{distributionCenterId}} endpoint execution for ID: {DistributionCenterId}", distributionCenterId);
+
                 var result = _getSalesByDistributionCenterUseCase.Execute(distributionCenterId);
+                
+                stopwatch.Stop();
+                _logger.LogInformation("GET /api/sales/{{distributionCenterId}} endpoint completed successfully in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                
                 return Ok(result);
             }
             catch (DistributionCenterNotFoundException ex)
             {
-                _logger.LogWarning(ex, "Distribution center not found");
+                stopwatch.Stop();
+                _logger.LogWarning(ex, "Distribution center not found. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting sales by distribution center");
+                stopwatch.Stop();
+                _logger.LogError(ex, "Error getting sales by distribution center. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
@@ -105,14 +135,23 @@ namespace CarCompany.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetSalesPercentageByCenter()
         {
+            var stopwatch = Stopwatch.StartNew();
+            
             try
             {
+                _logger.LogInformation("Starting GET /api/sales/percentage-by-center endpoint execution");
+
                 var result = _getUnitsSalesPercentageByDistributionCenter.GetUnitsSalesPercentageByCenter();
+                
+                stopwatch.Stop();
+                _logger.LogInformation("GET /api/sales/percentage-by-center endpoint completed successfully in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting sales percentage by center");
+                stopwatch.Stop();
+                _logger.LogError(ex, "Error getting sales percentage by center. Endpoint failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
