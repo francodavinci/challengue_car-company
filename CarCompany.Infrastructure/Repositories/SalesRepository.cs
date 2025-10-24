@@ -1,11 +1,10 @@
-﻿using CarCompany.Application.DTOs;
-using CarCompany.Application.RepositoriesContracts;
+﻿using CarCompany.Domain.Interfaces;
 using CarCompany.Domain.Entities;
 using CarCompany.Domain.Enums;
 
 namespace CarCompany.Infrastructure.Repositories
 {
-    public class SalesRepository : ISalesRepositoryContract
+    public class SalesRepository : ISalesRepository
     {
         private readonly List<Sale> _sales = new()
         {
@@ -40,6 +39,8 @@ namespace CarCompany.Infrastructure.Repositories
 
         public IEnumerable<Sale> GetAll() => _sales.ToList();
 
-        public IEnumerable<Sale> GetByDistributionCenter(Guid? distributionCenterID) => _sales.Where(x => x.DistributionCenterID == distributionCenterID);
+        public IEnumerable<Sale> GetByDistributionCenter(Guid distributionCenterID) => _sales.Where(x => x.DistributionCenterID == distributionCenterID);
+
+        public IEnumerable<Sale> GetByTypeModel(TypeCar model) => _sales.Where(x => x.Car.Model == model);
     }
 }
