@@ -2,6 +2,8 @@
 using CarCompany.Domain.Entities;
 using CarCompany.Domain.Interfaces;
 using CarCompany.Domain.Exceptions;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace CarCompany.Application.UseCases
 {
@@ -9,34 +11,57 @@ namespace CarCompany.Application.UseCases
     {
         private readonly ISalesRepository _salesRepository;
         private readonly IDistributionCenterRepository _distributionCenterRepository;
+        private readonly ILogger<CreateSaleUseCase> _logger;
 
         public CreateSaleUseCase(
             ISalesRepository salesRepository,
-            IDistributionCenterRepository distributionCenterRepository)
+            IDistributionCenterRepository distributionCenterRepository,
+            ILogger<CreateSaleUseCase> logger)
         {
             _salesRepository = salesRepository;
             _distributionCenterRepository = distributionCenterRepository;
+            _logger = logger;
         }
 
         public SaleResponse Execute(SaleRequest request)
         {
-            // Validate distribution center exists
-            var distributionCenter = _distributionCenterRepository.GetById(request.DistributionCenterID);
-            if (distributionCenter == null)
+            var stopwatch = Stopwatch.StartNew();
+            
+            try
             {
-                throw new DistributionCenterNotFoundException(request.DistributionCenterID);
+                _logger.LogInformation("Starting CreateSaleUseCase execution for DistributionCenter: {DistributionCenterId}", 
+                    request.DistributionCenterID);
+
+                // Validate distribution center exists
+                var distributionCenter = _distributionCenterRepository.GetById(request.DistributionCenterID);
+                if (distributionCenter == null)
+                {
+                    throw new DistributionCenterNotFoundException(request.DistributionCenterID);
+                }
+
+                // Create car entity
+                var car = new Car(request.CarType);
+
+                // Create sale entity
+                var sale = new Sale(car, request.DistributionCenterID);
+
+                // Insert sale into the repository
+                var savedSale = _salesRepository.Add(sale);
+
+                var result = savedSale.ToSaleResponse();
+                
+                stopwatch.Stop();
+                _logger.LogInformation("CreateSaleUseCase completed successfully in {ElapsedMs}ms. Sale ID: {SaleId}", 
+                    stopwatch.ElapsedMilliseconds, result.ID);
+
+                return result;
             }
-
-            // Create car entity
-            var car = new Car(request.CarType);
-
-            // Create sale entity
-            var sale = new Sale(car, request.DistributionCenterID);
-
-            // Insert sale into the repository
-            var savedSale = _salesRepository.Add(sale);
-
-            return savedSale.ToSaleResponse();
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                _logger.LogError(ex, "CreateSaleUseCase failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                throw;
+            }
         }
     }
 }

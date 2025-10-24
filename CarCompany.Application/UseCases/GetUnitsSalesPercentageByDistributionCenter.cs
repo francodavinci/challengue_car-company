@@ -5,64 +5,87 @@ using System.Text;
 using System.Threading.Tasks;
 using CarCompany.Domain.Interfaces;
 using CarCompany.Application.DTOs;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace CarCompany.Application.UseCases
 {
     public class GetUnitsSalesPercentageByDistributionCenter
     {
-
         private readonly ISalesRepository _salesRepository;
         private readonly IDistributionCenterRepository _distributionCenterRepository;
+        private readonly ILogger<GetUnitsSalesPercentageByDistributionCenter> _logger;
 
         public GetUnitsSalesPercentageByDistributionCenter(
             ISalesRepository salesRepository,
-            IDistributionCenterRepository distributionCenterRepository)
+            IDistributionCenterRepository distributionCenterRepository,
+            ILogger<GetUnitsSalesPercentageByDistributionCenter> logger)
         {
             _salesRepository = salesRepository;
             _distributionCenterRepository = distributionCenterRepository;
+            _logger = logger;
         }
 
         public SalesUnitsPercentageByCenterResponse GetUnitsSalesPercentageByCenter()
         {
-            // obtain all sales
-            var sales = _salesRepository.GetAll();
-
-            // obtain all distribution centers
-            var distributionCenters = _distributionCenterRepository.GetAll();
-
-            // calculate total units
-            var totalUnits = sales.Count();
-
-            // group sales by distribution center and then by car model
-            var centerPercentages = new List<CenterData>();
-
-            foreach (var center in distributionCenters)
+            var stopwatch = Stopwatch.StartNew();
+            
+            try
             {
-                var centerSales = sales.Where(sale => sale.DistributionCenterID == center.Id);
+                _logger.LogInformation("Starting GetUnitsSalesPercentageByDistributionCenter execution");
 
-                if (centerSales.Any())
+                // obtain all sales
+                var sales = _salesRepository.GetAll();
+
+                // obtain all distribution centers
+                var distributionCenters = _distributionCenterRepository.GetAll();
+
+                // calculate total units
+                var totalUnits = sales.Count();
+
+                // group sales by distribution center and then by car model
+                var centerPercentages = new List<CenterData>();
+
+                foreach (var center in distributionCenters)
                 {
-                    var modelPercentages = centerSales
-                        .GroupBy(sale => sale.Car.Model)
-                        .ToDictionary(
-                            group => group.Key,
-                            group => new ModelPercentageData
-                            {
-                                Units = group.Count(),
-                                Percentage = totalUnits > 0 ? Math.Round((decimal)group.Count() / totalUnits * 100, 2) : 0
-                            }
-                        );
+                    var centerSales = sales.Where(sale => sale.DistributionCenterID == center.Id);
 
-                    CenterData centerData = new(center.Name, modelPercentages);
+                    if (centerSales.Any())
+                    {
+                        var modelPercentages = centerSales
+                            .GroupBy(sale => sale.Car.Model)
+                            .ToDictionary(
+                                group => group.Key,
+                                group => new ModelPercentageData
+                                {
+                                    Units = group.Count(),
+                                    Percentage = totalUnits > 0 ? Math.Round((decimal)group.Count() / totalUnits * 100, 2) : 0
+                                }
+                            );
 
-                    centerPercentages.Add(centerData);
+                        CenterData centerData = new(center.Name, modelPercentages);
+
+                        centerPercentages.Add(centerData);
+                    }
                 }
-            }
 
-            return new SalesUnitsPercentageByCenterResponse
+                var result = new SalesUnitsPercentageByCenterResponse
+                {
+                    CenterPercentages = centerPercentages
+                };
+
+                stopwatch.Stop();
+                _logger.LogInformation("GetUnitsSalesPercentageByDistributionCenter completed successfully in {ElapsedMs}ms. Centers processed: {CenterCount}", 
+                    stopwatch.ElapsedMilliseconds, centerPercentages.Count);
+
+                return result;
+            }
+            catch (Exception ex)
             {
-                CenterPercentages = centerPercentages
-            };
+                stopwatch.Stop();
+                _logger.LogError(ex, "GetUnitsSalesPercentageByDistributionCenter failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+                throw;
+            }
         }
     }
 }
